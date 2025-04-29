@@ -75,3 +75,4 @@ if st.button("Predict"):
     st.success(f"🌧️ Predicted **Precipitation**: **{precip_pred:.2f} Inches**")
     st.success(f"❄️ Predicted **Minimum Temperature**: **{min_temp_pred:.2f} °F**")
     st.success(f"🔥 Predicted **Maximum Temperature**: **{max_temp_pred:.2f} °F**")
+
