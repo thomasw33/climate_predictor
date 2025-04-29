@@ -15,7 +15,7 @@ max_temp_model = joblib.load("max_temp_model.pkl")
 state_encoder_minmax = joblib.load("minmax_state_encoder.pkl")
 commodity_encoder_minmax = joblib.load("minmax_commodity_encoder.pkl")
 
-# 📄 Load dataset for dropdowns and actual lookup
+# 📄 Load dataset for dropdowns
 df = pd.read_csv("avg_temp_combined.csv")
 
 # 🖥️ UI Title
@@ -49,7 +49,7 @@ if st.button("Predict"):
     # Dummy value for input
     value = 0.0
 
-    # 📦 Prepare input for models
+    # Input DataFrame for main models
     input_main = pd.DataFrame([{
         "year": year,
         "state_encoded": state_encoded_main,
@@ -57,6 +57,7 @@ if st.button("Predict"):
         "value": value
     }])
 
+    # Input DataFrame for min/max models
     input_minmax = pd.DataFrame([{
         "year": year,
         "state_encoded": state_encoded_minmax,
@@ -69,35 +70,8 @@ if st.button("Predict"):
     min_temp_pred = min_temp_model.predict(input_minmax)[0]
     max_temp_pred = max_temp_model.predict(input_minmax)[0]
 
-    # 📄 Try to find actual values
-    actual_row = df[(df["year"] == year) & (df["state"] == state) & (df["commodity"] == crop)]
-
-    if not actual_row.empty:
-        actual_avg_temp = actual_row["avg_temp"].values[0]
-        actual_precip = actual_row["precipitation"].values[0]
-        actual_min_temp = actual_row["min_temp"].values[0]
-        actual_max_temp = actual_row["max_temp"].values[0]
-    else:
-        actual_avg_temp = actual_precip = actual_min_temp = actual_max_temp = None
-
-    # 📊 Display comparison
-    st.subheader("🌟 Prediction Results")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown("### 🔵 Predicted Values")
-        st.write(f"**Average Temperature**: {avg_temp_pred:.2f} °F")
-        st.write(f"**Precipitation**: {precip_pred:.2f} Inches")
-        st.write(f"**Minimum Temperature**: {min_temp_pred:.2f} °F")
-        st.write(f"**Maximum Temperature**: {max_temp_pred:.2f} °F")
-
-    with col2:
-        st.markdown("### 🟠 Actual Values")
-        if actual_row.empty:
-            st.write("❌ No actual data available for this selection.")
-        else:
-            st.write(f"**Average Temperature**: {actual_avg_temp:.2f} °F")
-            st.write(f"**Precipitation**: {actual_precip:.2f} Inches")
-            st.write(f"**Minimum Temperature**: {actual_min_temp:.2f} °F")
-            st.write(f"**Maximum Temperature**: {actual_max_temp:.2f} °F")
+    # 📊 Show predictions
+    st.success(f"🌡️ Predicted **Average Temperature**: **{avg_temp_pred:.2f} °F**")
+    st.success(f"🌧️ Predicted **Precipitation**: **{precip_pred:.2f} Inches**")
+    st.success(f"❄️ Predicted **Minimum Temperature**: **{min_temp_pred:.2f} °F**")
+    st.success(f"🔥 Predicted **Maximum Temperature**: **{max_temp_pred:.2f} °F**")
